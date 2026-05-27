@@ -87,8 +87,20 @@ export async function startDaemonRuntime(options: DaemonRuntimeOptions = {}): Pr
 }
 
 export async function runDaemonCliStartup(argv: string[], options: { printHelp?: () => void } = {}): Promise<void> {
-  let port = Number(process.env.OD_PORT) || 7456;
-  let host = process.env.OD_BIND_HOST || '127.0.0.1';
+// Render.com injects PORT; OD_PORT takes precedence when set explicitly.
+let port = Number(process.env.OD_PORT) || Number(process.env.PORT) || 7456;
+// On Render (and other cloud platforms) the daemon must bind on 0.0.0.0
+let host = process.env.OD_BIND_HOST || (process.env.RENDER ? '0.0.0.0' : '127.0.0.1');
+
+// Auto-allow the Render external URL so the browser can reach /api
+if (process.env.RENDER_EXTERNAL_URL && !process.env.OD_ALLOWED_ORIGINS) {
+  process.env.OD_ALLOWED_ORIGINS = process.env.RENDER_EXTERNAL_URL;
+} else if (process.env.RENDER_EXTERNAL_URL && process.env.OD_ALLOWED_ORIGINS) {
+  const existing = process.env.OD_ALLOWED_ORIGINS.split(',').map(s => s.trim());
+  if (!existing.includes(process.env.RENDER_EXTERNAL_URL)) {
+    process.env.OD_ALLOWED_ORIGINS = [...existing, process.env.RENDER_EXTERNAL_URL].join(',');
+  }
+}
   let open = true;
 
   for (let i = 0; i < argv.length; i++) {
