@@ -4,7 +4,7 @@ services:
     runtime: docker
     dockerfilePath: ./deploy/Dockerfile
     region: oregon
-    plan: standard
+    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -17,7 +17,3 @@ services:
         generateValue: true
       - key: OD_BIND_HOST
         value: "0.0.0.0"
-    disk:
-      name: open-design-data
-      mountPath: /app/.od
-      sizeGB: 10
