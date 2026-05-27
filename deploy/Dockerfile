@@ -88,16 +88,18 @@ COPY --chown=open-design:open-design assets/community-pets ./assets/community-pe
 # via the same registry path third-party plugins use.
 COPY --chown=open-design:open-design plugins/_official ./plugins/_official
 
+COPY --chown=open-design:open-design deploy/docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 RUN mkdir -p /app/.od && \
     chown -R open-design:open-design /app
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS=--max-old-space-size=192
 ENV OD_BIND_HOST=0.0.0.0
-ENV OD_PORT=7456
 
 EXPOSE 7456
 
 USER open-design
-ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "apps/daemon/dist/cli.js", "--no-open"]
+ENTRYPOINT ["/sbin/tini", "--", "/app/docker-entrypoint.sh"]
+CMD ["--no-open"]
