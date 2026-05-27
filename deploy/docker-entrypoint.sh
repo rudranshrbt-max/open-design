@@ -22,4 +22,13 @@ echo "[entrypoint] OD_PORT=${OD_PORT:-7456}"
 echo "[entrypoint] OD_BIND_HOST=${OD_BIND_HOST:-0.0.0.0}"
 echo "[entrypoint] OD_ALLOWED_ORIGINS=${OD_ALLOWED_ORIGINS:-<none>}"
 
+if [ "${OD_BIND_HOST:-127.0.0.1}" != "127.0.0.1" ] && \
+   [ "${OD_BIND_HOST:-127.0.0.1}" != "localhost" ] && \
+   [ "${OD_BIND_HOST:-127.0.0.1}" != "::1" ] && \
+   [ -z "$OD_API_TOKEN" ]; then
+  echo "[entrypoint] FATAL: OD_BIND_HOST requires OD_API_TOKEN" >&2
+  exit 1
+fi
+
+echo "[entrypoint] exec node /app/apps/daemon/dist/cli.js $*"
 exec node /app/apps/daemon/dist/cli.js "$@"
