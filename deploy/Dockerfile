@@ -95,7 +95,6 @@ RUN mkdir -p /app/.od && \
     chown -R open-design:open-design /app
 
 ENV NODE_ENV=production
-ENV NODE_OPTIONS=--max-old-space-size=192
 ENV OD_BIND_HOST=0.0.0.0
 
 EXPOSE 7456
