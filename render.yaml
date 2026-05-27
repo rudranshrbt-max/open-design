@@ -3,6 +3,7 @@ services:
     name: open-design
     runtime: docker
     dockerfilePath: ./deploy/Dockerfile
+    dockerCommand: node /app/apps/daemon/dist/cli.js --no-open --host 0.0.0.0
     region: oregon
     plan: free
     healthCheckPath: /api/health
