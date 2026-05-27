@@ -3,7 +3,6 @@ services:
     name: open-design
     runtime: docker
     dockerfilePath: ./deploy/Dockerfile
-    dockerCommand: node /app/apps/daemon/dist/cli.js --no-open
     region: oregon
     plan: free
     healthCheckPath: /api/health
@@ -18,5 +17,3 @@ services:
         generateValue: true
       - key: OD_BIND_HOST
         value: "0.0.0.0"
-      - key: OD_PORT
-        value: "10000"
