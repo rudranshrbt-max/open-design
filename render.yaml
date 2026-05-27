@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: open-design
+    runtime: docker
+    dockerfilePath: ./deploy/Dockerfile
+    region: oregon
+    plan: standard
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+      - key: RENDER
+        value: "true"
+      - key: OD_API_TOKEN
+        generateValue: true
+      - key: OD_BIND_HOST
+        value: "0.0.0.0"
+    disk:
+      name: open-design-data
+      mountPath: /app/.od
+      sizeGB: 10
