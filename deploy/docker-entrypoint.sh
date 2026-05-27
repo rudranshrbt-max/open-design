@@ -30,5 +30,5 @@ if [ "${OD_BIND_HOST:-127.0.0.1}" != "127.0.0.1" ] && \
   exit 1
 fi
 
-echo "[entrypoint] exec node /app/apps/daemon/dist/cli.js $*"
+echo "[entrypoint] exec node /app/apps/daemon/dist/cli.js "$@"
 exec node /app/apps/daemon/dist/cli.js "$@"
