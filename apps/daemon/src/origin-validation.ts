@@ -11,23 +11,32 @@ export interface RequestWithOriginHeaders {
     'sec-fetch-site'?: unknown;
   };
 }
-
 export function configuredAllowedOrigins(env: NodeJS.ProcessEnv = process.env): string[] {
-  const raw = env.OD_ALLOWED_ORIGINS || '';
-  if (!raw.trim()) return [];
-  return raw
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean)
-    .map((origin) => {
-      const parsed = new URL(origin);
-      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-        throw new Error('OD_ALLOWED_ORIGINS only supports http:// and https:// origins');
-      }
-      return parsed.origin;
-    });
-}
+  const rawParts: string[] = [];
+  if (env.OD_ALLOWED_ORIGINS?.trim()) {
+    rawParts.push(...env.OD_ALLOWED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean));
+  }
+  if (env.RENDER_EXTERNAL_URL?.trim()) {
+    rawParts.push(env.RENDER_EXTERNAL_URL.trim());
+  }
+  if (env.RAILWAY_PUBLIC_DOMAIN?.trim()) {
+    rawParts.push(`https://${env.RAILWAY_PUBLIC_DOMAIN.trim()}`);
+  }
+  if (env.FLY_APP_NAME?.trim()) {
+    rawParts.push(`https://${env.FLY_APP_NAME.trim()}.fly.dev`);
+  }
 
+  const unique = [...new Set(rawParts)];
+  if (unique.length === 0) return [];
+
+  return unique.map((origin) => {
+    const parsed = new URL(origin);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      throw new Error('OD_ALLOWED_ORIGINS only supports http:// and https:// origins');
+    }
+    return parsed.origin;
+  });
+}
 export function configuredAllowedHosts(origins = configuredAllowedOrigins()): string[] {
   return origins.map((origin) => new URL(origin).host);
 }
